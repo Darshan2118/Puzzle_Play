@@ -9,11 +9,28 @@ window.addEventListener('orientationchange', setHeroHeight);
 window.addEventListener('load', setHeroHeight);
 setHeroHeight();
 
-//theme toggle
-const themeBtn = document.getElementById("theme-toggle");
-if (themeBtn) {
-  themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-theme");
-    themeBtn.textContent = document.body.classList.contains("dark-theme") ? "☀️" : "🌙";
+// Theme toggle (unified, persistent, works everywhere)
+function setTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark-theme");
+  } else {
+    document.body.classList.remove("dark-theme");
+  }
+  localStorage.setItem("theme", theme);
+}
+
+function syncThemeToggle() {
+  const themeToggle = document.getElementById("theme-toggle");
+  if (!themeToggle) return;
+  // Set toggle checked state based on theme
+  const savedTheme = localStorage.getItem("theme") || "light";
+  themeToggle.checked = savedTheme === "dark";
+  setTheme(savedTheme);
+  // Listen for toggle changes
+  themeToggle.addEventListener("change", function () {
+    setTheme(this.checked ? "dark" : "light");
   });
 }
+
+// On page load
+window.addEventListener("DOMContentLoaded", syncThemeToggle);
